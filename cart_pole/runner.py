@@ -11,10 +11,14 @@ class Runner:
         self.num_steps = num_steps
         actor = None
         if os.path.isdir(self.model_loc):
+            print('----------------------------------')
             print('Loading model')
+            print('----------------------------------')
             actor = tf.keras.models.load_model(self.model_loc)
         else:
+            print('----------------------------------')
             print('No saved Model, Generating new one')
+            print('----------------------------------')
         self.trainer = Trainer(actor=actor)
         self.file_writer = FileWriter(self.dirname, 'scores')
         self.file_writer.init_file(['score'])
@@ -34,7 +38,7 @@ class Runner:
             self.print(i, score)
 
     def print(self, i, score):
-        print('-----------------------------')
+        print('----------------------------------')
         print('episode:', i)
         print('    score:', score)
         print('    length', self.trainer.episode_length)

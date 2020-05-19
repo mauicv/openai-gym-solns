@@ -26,3 +26,8 @@ class Actor:
         policy = self.get_policy(inputs)
         action = tf.random.categorical(policy, num_samples=1)
         return action[0][0]
+
+    def get_action(self, inputs):
+        policy = self.get_policy(inputs)
+        action = policy.numpy().max()
+        return action

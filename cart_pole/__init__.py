@@ -1,15 +1,17 @@
-import gym
 from cart_pole.runner import Runner
 from gui import init_grapher
 from multiprocessing import Process
+import gym
 
 
 def play():
     env = gym.make('CartPole-v0')
-    env.reset()
+    actor = Runner(0, 0).trainer.actor
+    state = env.reset()
     for _ in range(100):
         env.render()
-        env.step(env.action_space.sample())
+        action = actor.get_action(state)
+        env.step(int(action))
     env.close()
 
 
