@@ -7,16 +7,17 @@ tf.keras.backend.set_floatx('float64')
 
 
 class Actor:
-    def __init__(self, num_layers, input_dim, layer_dim, output_dim):
-        self.input_dim = input_dim
-        self.output_dim = output_dim
+    def __init__(self, model=None):
+        self.model = model
 
+    @classmethod
+    def init_model(cls, num_layers, input_dim, layer_dim, output_dim):
         model = Sequential()
         model.add(Dense(layer_dim, input_dim=input_dim, activation='relu'))
         for layer in range(num_layers):
             model.add(Dense(layer_dim, activation='relu'))
             model.add(Dense(output_dim))
-        self.model = model
+        return cls(model=model)
 
     def get_policy(self, inputs):
         return nn.softmax(self.model(inputs[None, :]))

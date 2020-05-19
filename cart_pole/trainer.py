@@ -8,8 +8,8 @@ import math
 class Trainer:
     def __init__(self, actor=None):
         self.env = gym.make('CartPole-v0')
-        self.actor = actor if actor else \
-            Actor(1, self.env.observation_space.shape[0], 100, 2)
+        self.actor = Actor(model=actor) if actor else \
+            Actor.init_model(1, self.env.observation_space.shape[0], 100, 2)
         self.episode_length = 0
         self.opt = tf.keras.optimizers.Adam(learning_rate=0.1)
         self.variables = self.actor.model.trainable_variables
