@@ -1,7 +1,3 @@
-# from cart_pole import train
-from cart_pole import train_and_graph
-# from cart_pole import train_async
+from cart_pole import train
 
-# train()
-train_and_graph()
-# train_async()
+train()
