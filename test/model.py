@@ -2,7 +2,6 @@ import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
 from tensorflow import nn
-import numpy as np
 
 
 tf.keras.backend.set_floatx('float64')
@@ -22,10 +21,10 @@ class Actor:
         return cls(model=model)
 
     def get_policy(self, inputs):
-        return self.model(inputs[np.newaxis, :])
-        # return nn.softmax(self.model(inputs[None, :]))
+        return self.model(inputs[None, :])
 
     def get_action(self, inputs):
+        # print(inputs)
         policy = nn.softmax(self.get_policy(inputs))
         action = policy.numpy().argmax()
         return action

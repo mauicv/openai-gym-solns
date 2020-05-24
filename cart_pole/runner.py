@@ -2,6 +2,7 @@ from cart_pole.trainer import Trainer
 from file_system_controller import FileWriter
 import os
 import tensorflow as tf
+import numpy as np
 
 
 class Runner:
@@ -9,16 +10,10 @@ class Runner:
         self.dirname = out
         self.num_episodes = num_episodes
         self.num_steps = num_steps
+        self.scores = []
         actor = None
         if os.path.isdir(self.model_loc):
-            print('----------------------------------')
-            print('Loading model')
-            print('----------------------------------')
             actor = tf.keras.models.load_model(self.model_loc)
-        else:
-            print('----------------------------------')
-            print('No saved Model, Generating new one')
-            print('----------------------------------')
         self.trainer = Trainer(actor=actor)
         self.file_writer = FileWriter(self.dirname, 'scores')
         self.file_writer.init_file(['score'])
@@ -31,6 +26,8 @@ class Runner:
         for i in range(self.num_episodes):
             self.trainer.record_episode(self.num_steps)
             score = self.trainer.train()
+            self.scores.append(score)
+            score = np.array(self.scores[-25:]).mean()
             self.file_writer.write_val(score)
             self.trainer.reset()
             if i % 20 == 0:

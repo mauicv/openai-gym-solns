@@ -1,4 +1,7 @@
-from cart_pole import train, play
+from cart_pole import train, play, get_baseline
+# from test import train, play
 
-train()
+
+# get_baseline()
+# train()
 play()
