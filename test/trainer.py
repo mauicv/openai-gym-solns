@@ -52,16 +52,18 @@ class Trainer:
             self.states.append(state)
             self.actions.append(action)
 
+        print('------------------------------------------------')
+        self._display_states()
         self._display_actions()
         return self.states, self.rewards, self.actions, self.gradients
 
     def train(self):
         discounted_rewards, mean_score = self.discount_rewards()
         self.gradients = self.gradients*discounted_rewards[:, None]
+        self._display_action_probs()
         for index, grad in enumerate(self.gradients):
-            self._display_action_probs()
             self.opt.apply_gradients(zip(grad, self.variables))
-            self._display_action_probs()
+        self._display_action_probs()
         return len(self.rewards)
 
     def discount_rewards(self):
@@ -78,3 +80,7 @@ class Trainer:
 
     def _display_rewards(self):
         print('rewards     : ', ['%.4f' % r for r in self.rewards])
+
+    def _display_states(self):
+        print('states      : ', ['%.4f' % r for r in
+                                 self.states[:len(self.states)-1]])
