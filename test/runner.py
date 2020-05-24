@@ -11,13 +11,5 @@ class Runner:
     def start(self):
         for i in range(self.num_episodes):
             self.trainer.record_episode(self.num_steps)
-            score = self.trainer.train()
+            self.trainer.train()
             self.trainer.reset()
-            self.print(i, score)
-
-    def print(self, i, score):
-        pass
-        # print('----------------------------------')
-        # print('episode:', i)
-        # print('    score:', score)
-        # print('    length', self.trainer.episode_length)

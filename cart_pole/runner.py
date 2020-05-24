@@ -37,5 +37,5 @@ class Runner:
     def print(self, i, score):
         print('----------------------------------')
         print('episode:', i)
-        print('    score:', score)
         print('    length', self.trainer.episode_length)
+        print('    score:', score)

@@ -24,7 +24,6 @@ class Actor:
         return self.model(inputs[None, :])
 
     def get_action(self, inputs):
-        # print(inputs)
         policy = nn.softmax(self.get_policy(inputs))
         action = policy.numpy().argmax()
         return action

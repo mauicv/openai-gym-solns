@@ -23,7 +23,6 @@ class Actor:
 
     def get_policy(self, inputs):
         return self.model(inputs[np.newaxis, :])
-        # return nn.softmax(self.model(inputs[None, :]))
 
     def get_action(self, inputs):
         policy = nn.softmax(self.get_policy(inputs))
