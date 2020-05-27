@@ -1,8 +1,8 @@
-from test.runner import Runner
+from algorithms.test.runner import Runner
 import numpy as np
 
 
-def play(runner):
+def play_test(runner):
     env = runner.trainer.env
     actor = runner.trainer.actor
     state = env.reset()
@@ -14,19 +14,17 @@ def play(runner):
     return reward_sum
 
 
-def train():
-    TRAINING_SET_SIZE = 100
+def train_test(eps=1000, steps=10):
+    runner = Runner(eps, steps)
 
-    runner = Runner(TRAINING_SET_SIZE, 10)
-
-    rewards = np.zeros(TRAINING_SET_SIZE)
-    for i in range(TRAINING_SET_SIZE):
-        rewards[i] = play(runner)
+    rewards = np.zeros(eps)
+    for i in range(eps):
+        rewards[i] = play_test(runner)
     print('Mean reward before training: ', rewards.mean())
 
     runner.start()
 
-    rewards = np.zeros(TRAINING_SET_SIZE)
-    for i in range(TRAINING_SET_SIZE):
-        rewards[i] = play(runner)
+    rewards = np.zeros(eps)
+    for i in range(steps):
+        rewards[i] = play_test(runner)
     print('Mean reward after training: ', rewards.mean())

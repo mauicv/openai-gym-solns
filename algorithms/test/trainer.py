@@ -1,7 +1,7 @@
-from test.model import Actor
+from algorithms.test.model import Actor
+from algorithms.test.env import Env
 import tensorflow as tf
 import numpy as np
-from test.env import Env
 
 
 class Trainer:

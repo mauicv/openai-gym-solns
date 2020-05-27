@@ -1,4 +1,4 @@
-from test.trainer import Trainer
+from algorithms.test.trainer import Trainer
 
 
 class Runner:

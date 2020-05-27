@@ -1,11 +1,11 @@
-from cart_pole.runner import Runner
+from algorithms.cart_pole.runner import Runner
 from gui import init_grapher
 from multiprocessing import Process
 import gym
 import random
 
 
-def play():
+def play_cart_pole():
     env = gym.make('CartPole-v0')
     actor = Runner(0, 0).trainer.actor
     state = env.reset()
@@ -16,15 +16,15 @@ def play():
     env.close()
 
 
-def train():
+def train_cart_pole(eps=250, steps=100):
     p = Process(target=init_grapher,
                 args=('./data', 'scores',))
     p.start()
-    Runner(250, 100).start()
+    Runner(eps, steps).start()
     p.join()
 
 
-def get_baseline():
+def get_baseline_cart_pole():
     env = gym.make('CartPole-v0')
     state = env.reset()
     N = 1000
@@ -40,7 +40,7 @@ def get_baseline():
     return sum(counts)/len(counts)
 
 
-def play_trained_soln():
+def play_trained_soln_cart_pole():
     env = gym.make('CartPole-v0')
     actor = Runner(0, 0, out='./cart_pole/soln').trainer.actor
     state = env.reset()
