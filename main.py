@@ -3,7 +3,10 @@ from algorithms.cart_pole import train_cart_pole, play_cart_pole, \
     play_trained_soln_cart_pole
 from algorithms.moon_lander import play_moon_lander, train_moon_lander, \
     compute_path_stat_moon_lander
-from algorithms.test import train_test, play_test
+# from algorithms.test import train_test
+
+from algorithms._moon_lander import train_moon_lander_path, \
+    play_moon_lander_path
 
 
 @click.group(invoke_without_command=True)
@@ -26,7 +29,8 @@ def train_model(ctx, target, num_episodes, num_steps):
     elif target == 'cart-pole':
         train_cart_pole(num_episodes, num_steps)
     elif target == 'test':
-        play_test()
+        # train_test()
+        train_moon_lander_path(num_episodes, num_steps)
     else:
         print('param: --target | options: moon-lander, cart-pole, test')
 
@@ -43,13 +47,13 @@ def train_model(ctx, target, num_episodes, num_steps):
 def play_model(ctx, target, num_episodes, num_steps, example):
     if target == 'moon-lander':
         play_moon_lander()
+    elif target == 'test':
+        play_moon_lander_path()
     elif target == 'cart-pole':
         if example:
             play_trained_soln_cart_pole()
         else:
             play_cart_pole()
-    elif target == 'test':
-        train_test()
     else:
         print('param: --target | options: moon-lander, cart-pole, test')
 

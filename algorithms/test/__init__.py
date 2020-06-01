@@ -14,7 +14,7 @@ def play_test(runner):
     return reward_sum
 
 
-def train_test(eps=1000, steps=10):
+def train_test(eps=100, steps=10):
     runner = Runner(eps, steps)
 
     rewards = np.zeros(eps)

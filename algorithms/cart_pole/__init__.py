@@ -42,7 +42,7 @@ def get_baseline_cart_pole():
 
 def play_trained_soln_cart_pole():
     env = gym.make('CartPole-v0')
-    actor = Runner(0, 0, out='./cart_pole/soln').trainer.actor
+    actor = Runner(0, 0, out='./algorithms/cart_pole/soln').trainer.actor
     state = env.reset()
     for _ in range(1000):
         env.render()

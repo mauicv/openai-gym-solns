@@ -28,14 +28,23 @@ class FileWriter(FileSystemConfig):
                           quoting=csv.QUOTE_MINIMAL)
 
     def init_file(self, val):
+        self.keys = val
         with open(self.file_loc, 'w', newline='') as csvfile:
             writer = self._get_writer(csvfile)
-            writer.writerow(['timestamp', *val])
+            writer.writerow(['timestamp', *self.keys])
 
     def write_val(self, val):
         with open(self.file_loc, 'a', newline='') as csvfile:
             writer = self._get_writer(csvfile)
             writer.writerow([get_time_to_millisecond(), val])
+
+    def write_file(self, vals):
+        means, stds = vals
+        with open(self.file_loc, 'w', newline='') as csvfile:
+            writer = self._get_writer(csvfile)
+            writer.writerow(['timestamp', *self.keys])
+            for mean, std in zip(means, stds):
+                writer.writerow([get_time_to_millisecond(), mean, std])
 
 
 class FileReader(FileSystemConfig):
@@ -50,12 +59,12 @@ class FileReader(FileSystemConfig):
         data = {}
         with open(self.file_loc, 'r', newline='') as csvfile:
             reader = self._get_reader(csvfile)
-            t_key, v_key = next(reader)
-            data[v_key] = []
-            data[t_key] = []
+            keys = next(reader)
+            for key in keys:
+                data[key] = []
             for row in reader:
-                data[t_key].append(float(row[0]))
-                data[v_key].append(float(row[1]))
+                for index, key in enumerate(keys):
+                    data[key].append(float(row[index]))
         return data
 
 
