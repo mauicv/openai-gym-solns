@@ -1,4 +1,4 @@
-from algorithms.test.trainer import Trainer
+from algorithms.policy_gradient.test.trainer import Trainer
 
 
 class Runner:

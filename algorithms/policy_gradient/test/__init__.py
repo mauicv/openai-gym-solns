@@ -1,4 +1,4 @@
-from algorithms.test.runner import Runner
+from algorithms.policy_gradient.test.runner import Runner
 import numpy as np
 
 

@@ -1,4 +1,4 @@
-from algorithms.moon_lander.runner import Runner
+from algorithms.policy_gradient.moon_lander.runner import Runner
 import gym
 from gui import init_grapher
 from multiprocessing import Process

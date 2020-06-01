@@ -1,9 +1,9 @@
 import click
-from algorithms.cart_pole import train_cart_pole, play_cart_pole, \
-    play_trained_soln_cart_pole
-from algorithms.moon_lander import play_moon_lander, train_moon_lander, \
-    compute_path_stat_moon_lander
-from algorithms.test import train_test, play_test
+from algorithms.policy_gradient.cart_pole import train_cart_pole, \
+    play_cart_pole, play_trained_soln_cart_pole
+from algorithms.policy_gradient.moon_lander import play_moon_lander, \
+    train_moon_lander, compute_path_stat_moon_lander
+from algorithms.policy_gradient.test import train_test, play_test
 
 
 @click.group(invoke_without_command=True)

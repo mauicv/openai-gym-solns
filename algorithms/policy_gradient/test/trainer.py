@@ -1,5 +1,5 @@
-from algorithms.test.model import Actor
-from algorithms.test.env import Env
+from algorithms.model import Actor
+from algorithms.policy_gradient.test.env import Env
 import tensorflow as tf
 import numpy as np
 
