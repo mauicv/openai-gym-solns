@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 from tqdm import tqdm
 
 
-def play_moon_lander():
+def play(eps, steps):
     env = gym.make('LunarLander-v2')
     trainer = Runner(0, 0).trainer
     actor = trainer.actor
@@ -28,7 +28,7 @@ def play_moon_lander():
     # print(sum(rewards))
 
 
-def train_moon_lander(eps, steps=None):
+def train(eps, steps=None):
     p = Process(target=init_grapher,
                 args=('./data', 'scores',))
     p.start()

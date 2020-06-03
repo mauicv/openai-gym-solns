@@ -2,10 +2,12 @@ import click
 
 # --------------------------- Algorithms ---------------------------
 
-from algorithms.policy_gradient.cart_pole import train_cart_pole, \
-    play_cart_pole, play_trained_soln_cart_pole
-from algorithms.policy_gradient.moon_lander import play_moon_lander, \
-    train_moon_lander
+from algorithms.policy_gradient.cart_pole import train as train_cart_pole
+from algorithms.policy_gradient.cart_pole import play as play_cart_pole
+from algorithms.policy_gradient.cart_pole import example as example_cart_pole
+
+from algorithms.policy_gradient.moon_lander import play as play_moon_lander
+from algorithms.policy_gradient.moon_lander import train as train_moon_lander
 
 from algorithms.DQN.cart_pole import train_cart_pole as train_cart_pole_dqn
 from algorithms.DQN.cart_pole import play_cart_pole as play_cart_pole_dqn
@@ -13,13 +15,13 @@ from algorithms.DQN.cart_pole import play_cart_pole as play_cart_pole_dqn
 # --------------------------- Tests --------------------------------
 
 from tests.critic_learn import test_critic
-from algorithms.policy_gradient.test import train_test, play_test
+# from algorithms.policy_gradient.test import train_test, play_test
 
 # --------------------------- Cli ----------------------------------
 
 
 cli_map = {
-    'po': {
+    'pg': {
         'luner-lander': {
             'train': train_moon_lander,
             'play': play_moon_lander,
@@ -28,7 +30,7 @@ cli_map = {
         'cart-pole': {
             'train': train_cart_pole,
             'play': play_cart_pole,
-            'example': play_trained_soln_cart_pole
+            'example': example_cart_pole
         }
     },
     'dqn': {
@@ -36,16 +38,34 @@ cli_map = {
             'train': train_cart_pole_dqn,
             'play': play_cart_pole_dqn,
             'example': None
+        },
+        'luner-lander': {
+            'train': None,
+            'play': None,
+            'example': None
         }
     },
-    'ac': {}
+    'ac': {
+        'cart-pole': {
+            'train': None,
+            'play': None,
+            'example': None
+        },
+        'luner-lander': {
+            'train': None,
+            'play': None,
+            'example': None
+        }
+    }
 }
 
-test_map = {
-    'train': train_test,
-    'play': play_test,
-    'crtic': test_critic
-}
+
+def invoke(algorithm, target, intent, num_episodes, num_steps):
+    func = cli_map[algorithm][target][intent]
+    if func:
+        func(num_episodes, num_steps)
+    else:
+        print((algorithm, target, intent), 'option not available.')
 
 
 @click.group(invoke_without_command=True)
@@ -62,10 +82,10 @@ def cli(ctx):
               help='Number of epsiodes of training')
 @click.option('--num_steps', '-s', default=None,
               help='Max number of steps per episode')
-@click.option('--algorithm', '-a', default='po',
+@click.option('--algorithm', '-a', default='pg',
               help='Algorithm to use')
 def train(ctx, algorithm, target, num_episodes, num_steps):
-    cli_map[algorithm][target]['train'](num_episodes, num_steps)
+    invoke(algorithm, target, 'train', num_episodes, num_steps)
 
 
 @cli.command()
@@ -78,7 +98,27 @@ def train(ctx, algorithm, target, num_episodes, num_steps):
 @click.option('--algorithm', '-a', default='po',
               help='Algorithm to use')
 def play(ctx, algorithm, target, num_episodes, num_steps):
-    cli_map[algorithm][target]['play']()
+    invoke(algorithm, target, 'play', num_episodes, num_steps)
+
+
+@cli.command()
+@click.pass_context
+@click.option('--target', '-t', default='moon-lander', help='training target')
+@click.option('--num_episodes', '-e', default=2500,
+              help='Number of epsiodes of training')
+@click.option('--num_steps', '-s', default=None,
+              help='Max number of steps per episode')
+@click.option('--algorithm', '-a', default='po',
+              help='Algorithm to use')
+def example(ctx, algorithm, target, num_episodes, num_steps):
+    invoke(algorithm, target, 'example', num_episodes, num_steps)
+
+
+# test_map = {
+#     'train': train_test,
+#     'play': play_test,
+#     'crtic': test_critic
+# }
 
 
 @cli.command()
