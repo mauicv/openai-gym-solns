@@ -13,7 +13,7 @@ class Trainer:
             Critic.init_model(2, self.env.observation_space.shape[0]
                               + self.env.action_space.n, 64)
 
-        self.opt = tf.keras.optimizers.Adam(learning_rate=0.001)
+        self.opt = tf.keras.optimizers.Adam(learning_rate=0.0001)
         self.actions_dim = self.env.action_space.n
         self.variables = self.Q.model.trainable_variables
         self.discount_factor = 0.99
@@ -41,10 +41,19 @@ class Trainer:
 
             grads = tape.gradient(Q_estimate, self.variables)
             state, reward, done, _ = self.env.step(action)
+            reward = 0.01 if not done else -1
             future_Q = max(self.get_action_vals(state))
-            delta = reward + self.discount_factor * future_Q - Q_estimate
-            for grad in grads:
-                grad = grad*delta
+            target = reward + self.discount_factor * future_Q
+            delta = Q_estimate - target
+
+            # print('--------------------------------------')
+            # print('done: ', done)
+            # print('reward: ', reward)
+            # print('delta:', delta.numpy()[0][0])
+            # print('Q_estimate:', Q_estimate.numpy()[0][0])
+            # print('future_Q:', future_Q.numpy()[0][0])
+
+            grads = [grad*delta[0] for grad in grads]
             self.opt.apply_gradients(zip(grads, self.variables))
 
         self.env.close()
