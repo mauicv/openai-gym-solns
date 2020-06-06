@@ -26,13 +26,15 @@ def train(eps, steps):
     p.join()
 
 
-def example():
+def example(eps, steps):
     env = gym.make('CartPole-v0')
-    actor = Runner(0, 0, out='./algorithms/DQN/cart_pole/soln') \
-        .trainer.actor
+    trainer = Runner(0, 0, out='./algorithms/DQN/cart_pole/soln') \
+        .trainer
+
     state = env.reset()
-    for _ in range(1000):
+    for _ in range(steps):
         env.render()
-        action = actor.get_action(state)
+        action_Qs = trainer.get_action_vals(state)
+        action = np.argmax(action_Qs)
         state, _, done, _ = env.step(action)
     env.close()

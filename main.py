@@ -4,14 +4,15 @@ import click
 
 from algorithms.policy_gradient.cart_pole import train as train_cart_pole_pg
 from algorithms.policy_gradient.cart_pole import play as play_cart_pole_pg
-from algorithms.policy_gradient.cart_pole import example as example_cart_pole_pg
+from algorithms.policy_gradient.cart_pole import example  \
+    as example_cart_pole_pg
 
 from algorithms.policy_gradient.moon_lander import play as play_moon_lander
 from algorithms.policy_gradient.moon_lander import train as train_moon_lander
 
 from algorithms.DQN.cart_pole import train as train_cart_pole_dqn
 from algorithms.DQN.cart_pole import play as play_cart_pole_dqn
-from algorithms.DQN.cart_pole import play as example_cart_pole_dqn
+from algorithms.DQN.cart_pole import example as example_cart_pole_dqn
 
 # --------------------------- Tests --------------------------------
 
@@ -94,7 +95,7 @@ def train(ctx, algorithm, target, num_episodes, num_steps):
 @click.option('--target', '-t', default='moon-lander', help='training target')
 @click.option('--num_episodes', '-e', default=2500, type=int,
               help='Number of epsiodes of training')
-@click.option('--num_steps', '-s', default=None, type=int,
+@click.option('--num_steps', '-s', default=200, type=int,
               help='Max number of steps per episode')
 @click.option('--algorithm', '-a', default='po',
               help='Algorithm to use')
@@ -107,7 +108,7 @@ def play(ctx, algorithm, target, num_episodes, num_steps):
 @click.option('--target', '-t', default='moon-lander', help='training target')
 @click.option('--num_episodes', '-e', default=2500, type=int,
               help='Number of epsiodes of training')
-@click.option('--num_steps', '-s', default=None, type=int,
+@click.option('--num_steps', '-s', default=200, type=int,
               help='Max number of steps per episode')
 @click.option('--algorithm', '-a', default='po',
               help='Algorithm to use')
