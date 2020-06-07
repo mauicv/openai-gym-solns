@@ -14,6 +14,11 @@ from algorithms.DQN.cart_pole import train as train_cart_pole_dqn
 from algorithms.DQN.cart_pole import play as play_cart_pole_dqn
 from algorithms.DQN.cart_pole import example as example_cart_pole_dqn
 
+from algorithms.actor_critic.cart_pole import train as train_cart_pole_ac
+from algorithms.actor_critic.cart_pole import play as play_cart_pole_ac
+# from algorithms.actor_critic.cart_pole import example as example_cart_pole_ac
+
+
 # --------------------------- Tests --------------------------------
 
 from tests.critic_learn import test_critic
@@ -49,8 +54,8 @@ cli_map = {
     },
     'ac': {
         'cart-pole': {
-            'train': None,
-            'play': None,
+            'train': train_cart_pole_ac,
+            'play': play_cart_pole_ac,
             'example': None
         },
         'luner-lander': {
