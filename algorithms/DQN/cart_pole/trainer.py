@@ -39,12 +39,15 @@ class Trainer:
                 action = np.argmax(action_Qs)
                 Q_estimate = action_Qs[action]
 
-            grads = tape.gradient(Q_estimate, self.variables)
-            state, reward, done, _ = self.env.step(action)
-            reward = 0.01 if not done else -1
-            future_Q = max(self.get_action_vals(state))
-            target = reward + self.discount_factor * future_Q
-            delta = Q_estimate - target
+                state, reward, done, _ = self.env.step(action)
+
+                reward = 1 if not done else -1
+                future_Q = max(tf.stop_gradient(self.get_action_vals(state)))
+                final_state = 0 if done else 1
+                target = reward + self.discount_factor * future_Q * final_state
+                q_loss = tf.math.pow(Q_estimate - target, 2)
+
+            grads = tape.gradient(q_loss, self.variables)
 
             # print('--------------------------------------')
             # print('done: ', done)
@@ -53,7 +56,7 @@ class Trainer:
             # print('Q_estimate:', Q_estimate.numpy()[0][0])
             # print('future_Q:', future_Q.numpy()[0][0])
 
-            grads = [grad*delta[0] for grad in grads]
+            # grads = [grad*delta[0] for grad in grads]
             self.opt.apply_gradients(zip(grads, self.variables))
 
         self.env.close()

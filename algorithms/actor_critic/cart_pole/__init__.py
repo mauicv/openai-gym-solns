@@ -14,8 +14,10 @@ def play(eps, steps):
     for _ in range(steps):
         env.render()
         action = actor.get_action(state)
-        action_Q = trainer.get_action_q_value(state, action)
-        print(action_Q.numpy()[0][0])
+        qs = trainer.get_q_values(state)
+        print([q.numpy()[0][0] for q in qs])
+        # action_Q = trainer.get_action_q_value(state, action)
+        # print(action_Q.numpy()[0][0])
         state, _, done, _ = env.step(action)
     env.close()
 

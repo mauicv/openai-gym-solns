@@ -50,12 +50,26 @@ class Trainer:
                 loss = tf.nn.sparse_softmax_cross_entropy_with_logits(
                     logits=policy, labels=np.array([action]))
 
+                # quality of this action
                 q_val = self.get_action_q_value(state, action)
+                # q_diff = tf.stop_gradient(self.get_future_Q(state))
+
+                state, reward, done, _ = self.env.step(action)
+
+                reward = 1 if not done else -1
+                future_Q = tf.stop_gradient(self.get_future_Q(state))
+                finished = 0 if done else 1
+                target = reward + self.discount_factor * future_Q * finished
+                temp_diff = q_val - target
+                # q_loss = tf.math.pow(temp_diff, 2)
+
+                # if done:
+                print('target:', target.numpy()[0])
+                print('temp_diff:', temp_diff.numpy()[0])
+                print('q_val:', q_val.numpy()[0])
 
             actor_grads = actor_tape.gradient(loss, self.actor_variables)
             critic_grads = critic_tape.gradient(q_val, self.critic_variables)
-
-            state, reward, done, _ = self.env.step(action)
 
             # first update the actor model with the q_val as weight.
             actor_grads = [grad*q_val[0] for grad in actor_grads]
@@ -63,19 +77,21 @@ class Trainer:
                 .apply_gradients(zip(actor_grads, self.actor_variables))
 
             # second update the critic model with the target val:
-            # reward = 0.01 if not done else -1
-            future_Q = self.get_future_Q(state)
-            target = reward + self.discount_factor * future_Q
-            target_delta = q_val - target
-            critic_grads = [grad*target_delta[0] for grad in critic_grads]
+            # reward = 1 if not done else -1
+            # future_Q = self.get_future_Q(state)
+            # final_state = 1 if done else 0
+            # target = reward + self.discount_factor * future_Q * final_state
+            # target_delta = q_val - target
+            critic_grads = [grad*temp_diff[0] for grad in critic_grads]
             self.critic_opt \
-                .apply_gradients(zip(critic_grads, self.critic_variables))
+                .apply_gradients(zip(critic_grads,
+                                     self.critic_variables))
 
             # print('--------------------------------------')
             # print('done: ', done)
             # print('reward: ', reward)
-            # print('delta:', delta.numpy()[0][0])
-            # print('Q_estimate:', Q_estimate.numpy()[0][0])
+            # print('delta:', target_delta.numpy()[0][0])
+            # print('Q_estimate:', q_val.numpy()[0][0])
             # print('future_Q:', future_Q.numpy()[0][0])
 
         self.env.close()
@@ -93,6 +109,15 @@ class Trainer:
     def get_action_q_value(self, state, action):
         one_hot_action = tf.one_hot(action, self.actions_dim)
         return self.critic.get_Q(np.array(state), one_hot_action)
+
+    def get_q_values(self, state):
+        action_Qs = []
+        all_actions_one_hot = tf.one_hot(list(range(self.actions_dim)),
+                                         self.actions_dim)
+        for one_hot_action in all_actions_one_hot:
+            Q_a = self.critic.get_Q(np.array(state), one_hot_action)
+            action_Qs.append(Q_a)
+        return action_Qs
 
     def get_future_Q(self, state):
         action_Qs = []
