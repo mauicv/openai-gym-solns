@@ -1,7 +1,7 @@
 from algorithms.DDPG.moon_lander.runner import Runner
-from gui import init_grapher
 from multiprocessing import Process
 import gym
+from gui import init_grapher
 # import tensorflow as tf
 
 # import numpy as np
@@ -30,11 +30,14 @@ def play(eps, steps):
 
 
 def train(eps, steps):
-    p = Process(target=init_grapher,
-                args=('./data', 'scores',))
-    p.start()
-    Runner(eps, steps, tau=0.01).start()
-    p.join()
+    if init_grapher:
+        p = Process(target=init_grapher,
+                    args=('./data', 'scores',))
+        p.start()
+        Runner(eps, steps, tau=0.01).start()
+        p.join()
+    else:
+        Runner(eps, steps, tau=0.01).start()
 
 
 def test_Q(eps=1, steps=200):
