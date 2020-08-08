@@ -18,6 +18,11 @@ from algorithms.actor_critic.cart_pole import train as train_cart_pole_ac
 from algorithms.actor_critic.cart_pole import play as play_cart_pole_ac
 # from algorithms.actor_critic.cart_pole import example as example_cart_pole_ac
 
+from algorithms.DDPG.moon_lander import train as train_moon_lander_ddpg
+from algorithms.DDPG.moon_lander import play as play_moon_lander_ddpg
+from algorithms.DDPG.moon_lander import example as example_moon_lander_ddpg
+from algorithms.DDPG.moon_lander import test_Q
+
 
 # --------------------------- Tests --------------------------------
 
@@ -38,6 +43,14 @@ cli_map = {
             'train': train_cart_pole_pg,
             'play': play_cart_pole_pg,
             'example': example_cart_pole_pg
+        }
+    },
+    'ddpg': {
+        'luner-lander': {
+            'train': train_moon_lander_ddpg,
+            'play': play_moon_lander_ddpg,
+            'example': example_moon_lander_ddpg,
+            'test_Q': test_Q
         }
     },
     'dqn': {
@@ -102,7 +115,7 @@ def train(ctx, algorithm, target, num_episodes, num_steps):
               help='Number of epsiodes of training')
 @click.option('--num_steps', '-s', default=200, type=int,
               help='Max number of steps per episode')
-@click.option('--algorithm', '-a', default='po',
+@click.option('--algorithm', '-a', default='pg',
               help='Algorithm to use')
 def play(ctx, algorithm, target, num_episodes, num_steps):
     invoke(algorithm, target, 'play', num_episodes, num_steps)
@@ -115,10 +128,16 @@ def play(ctx, algorithm, target, num_episodes, num_steps):
               help='Number of epsiodes of training')
 @click.option('--num_steps', '-s', default=200, type=int,
               help='Max number of steps per episode')
-@click.option('--algorithm', '-a', default='po',
+@click.option('--algorithm', '-a', default='pg',
               help='Algorithm to use')
 def example(ctx, algorithm, target, num_episodes, num_steps):
     invoke(algorithm, target, 'example', num_episodes, num_steps)
+
+
+@cli.command()
+@click.pass_context
+def test_q(ctx):
+    invoke('ddpg', 'luner-lander', 'test_Q', 1, 200)
 
 
 # test_map = {
