@@ -48,8 +48,8 @@ class Runner:
                 .run_episode()
 
             if i % 20 == 0:
-                self.trainer.target_actor.model.save(self.actor_loc)
-                self.trainer.target_critic.model.save(self.critic_loc)
+                self.trainer.actor.model.save(self.actor_loc)
+                self.trainer.critic.model.save(self.critic_loc)
             self.print(i, score, learning_success_rate)
 
             if i % 5 == 0:
@@ -58,8 +58,8 @@ class Runner:
                 score = np.array(self.scores[-25:]).mean()
                 self.file_writer.write_val(score)
                 if score >= max(self.scores):
-                    self.trainer.target_actor.model.save(self.best_actor_loc)
-                    self.trainer.target_critic.model.save(self.best_critic_loc)
+                    self.trainer.actor.model.save(self.best_actor_loc)
+                    self.trainer.critic.model.save(self.best_critic_loc)
 
     def print(self, i, score, learning_success_rate):
         print('----------------------------------')
@@ -78,15 +78,15 @@ class Runner:
 
         while not done:
             episode_length += 1
-            action = self.trainer.target_actor.model(state[np.newaxis, :])
+            action = self.trainer.actor.model(state[np.newaxis, :])
             next_state, reward, done, _ = env.step(action[0])
             next_state = next_state[np.newaxis, :]
-            next_action = self.trainer.target_actor.model(next_state)
+            next_action = self.trainer.actor.model(next_state)
             Q_input = tf.concat([next_state, next_action], axis=1)
             y = reward + self.trainer.discount_factor*self.trainer\
-                .target_critic.model(Q_input)
+                .critic.model(Q_input)
             Q_input = tf.concat([state[np.newaxis, :], action], axis=1)
-            pred_reward = (y - self.trainer.target_critic.model(Q_input))\
+            pred_reward = (y - self.trainer.critic.model(Q_input))\
                 .numpy()[0][0]
 
             acc_Q_loss += (reward - pred_reward)**2

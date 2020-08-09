@@ -19,23 +19,23 @@ class Trainer:
         self.discount_factor = 0.99
         self.episode_length = 0
         self.actor_learning_rate = 0.00001
-        self.critic_learning_rate = 0.0001
+        self.critic_learning_rate = 0.00001
         self.exploration_value = 0.2
 
         self.actor = ContinuousActor(model=actor) if actor else \
             ContinuousActor.init_model(2, self.env.observation_space.shape[0],
-                                       256, self.env.action_space.shape[0])
+                                       400, self.env.action_space.shape[0])
 
         self.critic = Critic(model=critic) if critic else \
             Critic.init_model(2, self.env.observation_space.shape[0]
-                              + self.env.action_space.shape[0], 256)
+                              + self.env.action_space.shape[0], 350)
 
         if actor:
             self.target_actor = ContinuousActor(model=actor)
         else:
             self.target_actor = ContinuousActor.init_model(
                 2, self.env.observation_space.shape[0],
-                256, self.env.action_space.shape[0])
+                350, self.env.action_space.shape[0])
             self.target_actor.model.set_weights(self.actor.model.get_weights())
 
         if critic:
@@ -43,7 +43,7 @@ class Trainer:
         else:
             self.target_critic = Critic.init_model(
                 2, self.env.observation_space.shape[0]
-                + self.env.action_space.shape[0], 256)
+                + self.env.action_space.shape[0], 400)
             self.target_critic.model\
                 .set_weights(self.critic.model.get_weights())
 

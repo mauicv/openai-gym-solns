@@ -25,3 +25,7 @@ To see pretrained examples use `python main.py example`. The options are `--targ
 ```sh
 python main.py example --target='luner-lander' --algorithm='pg'
 ```
+
+#### Note:
+
+- evo is experimental and I'm not sure it should be technically classed as an evolutionary algorithm. 
