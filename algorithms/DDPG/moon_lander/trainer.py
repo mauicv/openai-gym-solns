@@ -28,14 +28,14 @@ class Trainer:
 
         self.critic = Critic(model=critic) if critic else \
             Critic.init_model(2, self.env.observation_space.shape[0]
-                              + self.env.action_space.shape[0], 350)
+                              + self.env.action_space.shape[0], 400)
 
         if actor:
             self.target_actor = ContinuousActor(model=actor)
         else:
             self.target_actor = ContinuousActor.init_model(
                 2, self.env.observation_space.shape[0],
-                350, self.env.action_space.shape[0])
+                400, self.env.action_space.shape[0])
             self.target_actor.model.set_weights(self.actor.model.get_weights())
 
         if critic:
