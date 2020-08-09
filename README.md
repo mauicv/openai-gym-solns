@@ -25,8 +25,3 @@ To see pretrained examples use `python main.py example`. The options are `--targ
 ```sh
 python main.py example --target='luner-lander' --algorithm='pg'
 ```
-
-
-### TODO:
-- [ ] add burn in for Q learning in ddpg.
-- [ ] add checks for Q convergence in Memory

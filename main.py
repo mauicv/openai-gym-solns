@@ -98,7 +98,7 @@ def cli(ctx):
 @cli.command()
 @click.pass_context
 @click.option('--target', '-t', default=None, help='training target')
-@click.option('--num_episodes', '-e', default=2500, type=int,
+@click.option('--num_episodes', '-e', default=5000, type=int,
               help='Number of epsiodes of training')
 @click.option('--num_steps', '-s', default=None, type=int,
               help='Max number of steps per episode')
