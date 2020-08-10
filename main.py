@@ -26,6 +26,11 @@ from algorithms.DDPG.moon_lander import test_Q
 from algorithms.evo.moon_lander import train as train_moon_lander_evo
 from algorithms.evo.moon_lander import play as play_moon_lander_evo
 
+from algorithms.TD3.moon_lander import train as train_moon_lander_td3
+from algorithms.TD3.moon_lander import play as play_moon_lander_td3
+# from algorithms.TD3.moon_lander import example as example_moon_lander_td3
+
+
 # --------------------------- Tests --------------------------------
 
 from tests.critic_learn import test_critic
@@ -35,6 +40,13 @@ from tests.critic_learn import test_critic
 
 
 cli_map = {
+    'td3': {
+        'luner-lander': {
+            'train': train_moon_lander_td3,
+            'play': play_moon_lander_td3,
+            'example': None
+        }
+    },
     'evo': {
         'luner-lander': {
             'train': train_moon_lander_evo,
