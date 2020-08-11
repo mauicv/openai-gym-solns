@@ -103,17 +103,15 @@ class Runner:
             next_action = self.trainer.actor.model(next_state)
 
             Q_input = tf.concat([next_state, next_action], axis=1)
-            Q_1_val = self.target_critic_1.model(Q_input)
-            Q_2_val = self.target_critic_1.model(Q_input)
+            Q_1_val = self.trainer.target_critic_1.model(Q_input)
+            Q_2_val = self.trainer.target_critic_1.model(Q_input)
             Q_val = tf.math.minimum(Q_1_val, Q_2_val)
             y = reward + self.trainer.discount_factor*Q_val
             Q_input = tf.concat([state[np.newaxis, :], action], axis=1)
             Q_1 = self.trainer.critic_1.model(Q_input)
             Q_2 = self.trainer.critic_2.model(Q_input)
-            pred_reward_1 = (y - self.trainer.critic.model(Q_1))\
-                .numpy()[0][0]
-            pred_reward_2 = (y - self.trainer.critic.model(Q_2))\
-                .numpy()[0][0]
+            pred_reward_1 = (y - Q_1).numpy()[0][0]
+            pred_reward_2 = (y - Q_2).numpy()[0][0]
             acc_Q_loss_1 += (reward - pred_reward_1)**2
             acc_Q_loss_2 += (reward - pred_reward_2)**2
             episode_r += reward

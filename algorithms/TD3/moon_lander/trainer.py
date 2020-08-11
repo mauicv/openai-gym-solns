@@ -21,18 +21,20 @@ class Trainer:
         self.actor_learning_rate = 0.00001
         self.critic_learning_rate = 0.00001
         self.exploration_value = 0.2
-        self.smoothing_value = 0.05
+        self.smoothing_var = 0.05
         self.clipping_val = 0.5
+        self.low_action = -1
+        self.high_action = 1
 
         self.actor = ContinuousActor(model=actor) if actor else \
             ContinuousActor.init_model(2, self.env.observation_space.shape[0],
                                        400, self.env.action_space.shape[0])
 
-        self.critic_1 = Critic(model=critics[0]) if critics else \
+        self.critic_1 = Critic(model=critics[0]) if all(critics) else \
             Critic.init_model(2, self.env.observation_space.shape[0]
                               + self.env.action_space.shape[0], 400)
 
-        self.critic_2 = Critic(model=critics[1]) if critics else \
+        self.critic_2 = Critic(model=critics[1]) if all(critics) else \
             Critic.init_model(2, self.env.observation_space.shape[0]
                               + self.env.action_space.shape[0], 400)
 
@@ -44,7 +46,7 @@ class Trainer:
                 400, self.env.action_space.shape[0])
             self.target_actor.model.set_weights(self.actor.model.get_weights())
 
-        if critics:
+        if all(critics):
             self.target_critic_1 = Critic(model=critics[0])
             self.target_critic_2 = Critic(model=critics[1])
         else:
@@ -58,7 +60,7 @@ class Trainer:
                 2, self.env.observation_space.shape[0]
                 + self.env.action_space.shape[0], 400)
             self.target_critic_2.model\
-                .set_weights(self.critic_1.model.get_weights())
+                .set_weights(self.critic_2.model.get_weights())
 
         self.actor_variables = self.actor.model.trainable_variables
         self.critic_1_variables = self.critic_1.model.trainable_variables
@@ -101,13 +103,14 @@ class Trainer:
             states, actions, rewards, done, next_states = self.memory.sample()
 
             with tf.GradientTape() as actor_tape, \
-                    tf.GradientTape() as critic_tape:
+                    tf.GradientTape() as critic_tape_1, \
+                    tf.GradientTape() as critic_tape_2:
                 y = self.compute_target(states, actions, rewards,
                                         next_states, done)
 
                 Q_input = tf.concat([states, actions], axis=1)
                 squared_error_1 = tf.pow(y - self.critic_1.model(Q_input), 2)
-                squared_error_2 = tf.pow(y - self.critic_1.model(Q_input), 2)
+                squared_error_2 = tf.pow(y - self.critic_2.model(Q_input), 2)
                 Q_loss_1 = tf.reduce_mean(squared_error_1)
                 Q_loss_2 = tf.reduce_mean(squared_error_2)
 
@@ -120,9 +123,9 @@ class Trainer:
                 self.actor_opt \
                     .apply_gradients(zip(actor_grads, self.actor_variables))
 
-            critic_1_grads = critic_tape\
+            critic_1_grads = critic_tape_1\
                 .gradient(Q_loss_1, self.critic_1_variables)
-            critic_2_grads = critic_tape\
+            critic_2_grads = critic_tape_2\
                 .gradient(Q_loss_2, self.critic_2_variables)
 
             self.critic_opt \
@@ -136,7 +139,11 @@ class Trainer:
             self.target_critic_1.track_weights(self.tau, self.critic_1.model)
             self.target_critic_2.track_weights(self.tau, self.critic_2.model)
 
-        return Q_loss_1, Q_loss_2, action_loss
+            if self.eps > self.burn_in_eps:
+                return Q_loss_1.numpy(), Q_loss_2.numpy(), action_loss
+            else:
+                return Q_loss_1.numpy(), Q_loss_2.numpy(), 0
+        return 0, 0, 0
 
     def compute_target(self, states, actions, rewards, next_states, done):
         next_actions = self.target_actor.model(next_states)
