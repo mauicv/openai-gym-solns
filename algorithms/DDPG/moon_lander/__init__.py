@@ -60,5 +60,5 @@ def example(eps, steps):
         # action_Q = trainer.get_Q_value(state, action)
         # print(action_Q.numpy()[0][0])
         state, _, done, _ = env.step(action)
-        done = i > 5000
+        done = i > 2000
     env.close()

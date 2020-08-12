@@ -36,6 +36,23 @@ def train(eps, steps=None):
     p.join()
 
 
+def example(eps, steps):
+    env = gym.make('LunarLander-v2')
+    trainer = Runner(0, 0,
+                     out='./algorithms/policy_gradient/moon_lander/soln') \
+        .trainer
+    trainer = Runner(0, 0).trainer
+    actor = trainer.actor
+    state = env.reset()
+    done = False
+    while not done:
+        env.render()
+        policy = actor.get_policy(state)
+        action = trainer.sample_action(policy)
+        state, reward, done, info = env.step(action)
+    env.close()
+
+
 def compute_path_stat_moon_lander():
     env = gym.make('LunarLander-v2')
     trainer = Runner(0, 0).trainer

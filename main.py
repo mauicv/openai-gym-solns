@@ -7,8 +7,11 @@ from algorithms.policy_gradient.cart_pole import play as play_cart_pole_pg
 from algorithms.policy_gradient.cart_pole import example  \
     as example_cart_pole_pg
 
-from algorithms.policy_gradient.moon_lander import play as play_moon_lander
-from algorithms.policy_gradient.moon_lander import train as train_moon_lander
+from algorithms.policy_gradient.moon_lander import play as play_moon_lander_pg
+from algorithms.policy_gradient.moon_lander import train \
+    as train_moon_lander_pg
+from algorithms.policy_gradient.moon_lander import example \
+    as example_moon_lander_pg
 
 from algorithms.DQN.cart_pole import train as train_cart_pole_dqn
 from algorithms.DQN.cart_pole import play as play_cart_pole_dqn
@@ -56,9 +59,9 @@ cli_map = {
     },
     'pg': {
         'luner-lander': {
-            'train': train_moon_lander,
-            'play': play_moon_lander,
-            'example': None
+            'train': train_moon_lander_pg,
+            'play': play_moon_lander_pg,
+            'example': example_moon_lander_pg
         },
         'cart-pole': {
             'train': train_cart_pole_pg,
