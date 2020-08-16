@@ -33,6 +33,10 @@ from algorithms.TD3.moon_lander import train as train_moon_lander_td3
 from algorithms.TD3.moon_lander import play as play_moon_lander_td3
 # from algorithms.TD3.moon_lander import example as example_moon_lander_td3
 
+from algorithms.TD3.gt_stander import train as train_gt_stander_td3
+from algorithms.TD3.gt_stander import play as play_gt_stander_td3
+# from algorithms.TD3.moon_lander import example as example_gt_stander_td3
+
 
 # --------------------------- Tests --------------------------------
 
@@ -47,6 +51,11 @@ cli_map = {
         'luner-lander': {
             'train': train_moon_lander_td3,
             'play': play_moon_lander_td3,
+            'example': None
+        },
+        'gt-stander': {
+            'train': train_gt_stander_td3,
+            'play': play_gt_stander_td3,
             'example': None
         }
     },
