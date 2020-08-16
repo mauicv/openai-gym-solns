@@ -115,12 +115,10 @@ class Trainer:
                 Q_loss_1 = tf.reduce_mean(squared_error_1)
                 Q_loss_2 = tf.reduce_mean(squared_error_2)
 
-                if self.eps > self.burn_in_eps and \
-                        self.episode_length % self.policy_freq == 0:
+                if self.update_policy:
                     action_loss = tf.math.negative(self.action_loss(states))
 
-            if self.eps > self.burn_in_eps and \
-                    self.episode_length % self.policy_freq == 0:
+            if self.update_policy:
                 actor_grads = actor_tape\
                     .gradient(action_loss, self.actor_variables)
                 self.actor_opt \
@@ -142,11 +140,16 @@ class Trainer:
             self.target_critic_1.track_weights(self.tau, self.critic_1.model)
             self.target_critic_2.track_weights(self.tau, self.critic_2.model)
 
-            if self.eps > self.burn_in_eps:
+            if self.update_policy:
                 return Q_loss_1.numpy(), Q_loss_2.numpy(), action_loss
             else:
                 return Q_loss_1.numpy(), Q_loss_2.numpy(), 0
         return 0, 0, 0
+
+    @property
+    def update_policy(self):
+        return self.eps > self.burn_in_eps and \
+                self.episode_length % self.policy_freq
 
     def compute_target(self, states, actions, rewards, next_states, done):
         next_actions = self.target_actor.model(next_states)
