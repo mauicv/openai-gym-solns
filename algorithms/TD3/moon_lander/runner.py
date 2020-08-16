@@ -56,7 +56,7 @@ class Runner:
 
     def start(self):
         for i in range(self.num_episodes):
-            reward_sum, Q_loss_1, Q_loss_2, A_loss, episode_length = \
+            reward_sum, episode_length = \
                 self.trainer.run_episode()
 
             if i % 20 == 0:
@@ -64,8 +64,7 @@ class Runner:
                 self.trainer.critic_1.model.save(self.critic_1_loc)
                 self.trainer.critic_2.model.save(self.critic_2_loc)
 
-            self.print(i, reward_sum, Q_loss_1, Q_loss_2, A_loss,
-                       episode_length)
+            self.print(i, reward_sum, episode_length)
 
             if i % 5 == 0:
                 score = self.test_run()
@@ -77,14 +76,11 @@ class Runner:
                     self.trainer.critic_1.model.save(self.best_critic_1_loc)
                     self.trainer.critic_2.model.save(self.best_critic_2_loc)
 
-    def print(self, i, reward_sum, Q_loss_1, Q_loss_2, A_loss, episode_length):
+    def print(self, i, reward_sum, episode_length):
         print('----------------------------------')
         print('episode:', i)
         print('    length', episode_length)
         print('    reward_sum:', reward_sum)
-        print('    Q_loss_1:', Q_loss_1)
-        print('    Q_loss_2:', Q_loss_2)
-        print('    A_loss:', A_loss)
 
     def test_run(self):
         done = False

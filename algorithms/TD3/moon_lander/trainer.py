@@ -18,8 +18,8 @@ class Trainer:
         self.actions_dim = self.env.action_space.shape[0]
         self.discount_factor = 0.99
         self.episode_length = 0
-        self.actor_learning_rate = 0.0001
-        self.critic_learning_rate = 0.0001
+        self.actor_learning_rate = 0.00001
+        self.critic_learning_rate = 0.00001
         self.exploration_value = 0.2
         self.smoothing_var = 0.05
         self.clipping_val = 0.5
@@ -86,17 +86,17 @@ class Trainer:
                         stddev=self.exploration_value,
                         dtype=tf.dtypes.float64)
             action = tf.clip_by_value(action,
-                                      clip_value_min=-self.low_action,
+                                      clip_value_min=self.low_action,
                                       clip_value_max=self.high_action)
             next_state, reward, done, _ = self.env.step(action)
             self.memory.remember(state, action, reward, done, next_state)
 
             reward_sum = reward_sum + reward
-            Q_loss_1, Q_loss_2, A_loss = self.train()
+            self.train()
             state = next_state
         self.env.close()
 
-        return reward_sum, Q_loss_1, Q_loss_2, A_loss, self.episode_length
+        return reward_sum, self.episode_length
 
     def train(self):
         if self.memory.full():
@@ -156,13 +156,13 @@ class Trainer:
                              clip_value_min=-self.clipping_val,
                              clip_value_max=self.clipping_val)
         next_actions = tf.clip_by_value(
-                         clipped_smoothing_noise + smoothing_noise,
-                         clip_value_min=-self.low_action,
+                         clipped_smoothing_noise + next_actions,
+                         clip_value_min=self.low_action,
                          clip_value_max=self.high_action)
 
         Q_input = tf.concat([next_states, next_actions], axis=1)
         Q_1_val = self.target_critic_1.model(Q_input)
-        Q_2_val = self.target_critic_1.model(Q_input)
+        Q_2_val = self.target_critic_2.model(Q_input)
         Q_val = tf.math.minimum(Q_1_val, Q_2_val)
         y = rewards[:, None] + self.discount_factor*(1-done)*Q_val
         return y
