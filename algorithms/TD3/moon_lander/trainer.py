@@ -25,6 +25,7 @@ class Trainer:
         self.clipping_val = 0.5
         self.low_action = -1
         self.high_action = 1
+        self.policy_freq = 2
 
         self.actor = ContinuousActor(model=actor) if actor else \
             ContinuousActor.init_model(2, self.env.observation_space.shape[0],
@@ -114,10 +115,12 @@ class Trainer:
                 Q_loss_1 = tf.reduce_mean(squared_error_1)
                 Q_loss_2 = tf.reduce_mean(squared_error_2)
 
-                if self.eps > self.burn_in_eps:
+                if self.eps > self.burn_in_eps and \
+                        self.episode_length % self.policy_freq == 0:
                     action_loss = tf.math.negative(self.action_loss(states))
 
-            if self.eps > self.burn_in_eps:
+            if self.eps > self.burn_in_eps and \
+                    self.episode_length % self.policy_freq == 0:
                 actor_grads = actor_tape\
                     .gradient(action_loss, self.actor_variables)
                 self.actor_opt \
