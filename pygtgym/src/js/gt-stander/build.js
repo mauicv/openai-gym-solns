@@ -20,6 +20,7 @@ class Env {
     this.controls = {}
     this.initalPos=[]
     this.iter = 0
+    this.done = false
     this._buildEmbeddedActor()
     return this._getState()
   }

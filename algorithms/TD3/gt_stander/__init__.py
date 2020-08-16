@@ -2,24 +2,24 @@ from algorithms.TD3.gt_stander.runner import Runner
 from multiprocessing import Process
 import pygtgym as gym
 from gui import init_grapher
-import tensorflow as tf
+# import tensorflow as tf
 
-# import numpy as np
+import numpy as np
 
 
 def play(eps, steps):
     env = gym.make('gt-stander')
-    # trainer = Runner(0, 0).trainer
-    # actor = trainer.actor
+    trainer = Runner(0, 0).trainer
+    actor = trainer.actor
     # print(env.action_space.high[0])
     done = False
     state = env.reset()
-    while not done:
-        env.render()
-        action = tf.random\
-            .normal([6], mean=0.0, stddev=1.0,
-                    dtype=tf.dtypes.float64)
-        # action = actor.get_action(state)
+    for i in range(2000):
+        # env.render()
+        # action = tf.random\
+        #     .normal([6], mean=0.0, stddev=1.0,
+        #             dtype=tf.dtypes.float64)
+        action = actor.get_action(np.array(state))
         # action = action + tf.random\
         #     .normal([2], mean=0.0, stddev=1.0,
         #             dtype=tf.dtypes.float64)
@@ -30,6 +30,7 @@ def play(eps, steps):
         # print(action_Q.numpy()[0][0])
         # print(list(action.numpy()))
         state, _, done, _ = env.step(list(action.numpy()))
+        print(state, done)
     env.close()
 
 

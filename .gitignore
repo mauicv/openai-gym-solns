@@ -6,3 +6,4 @@ notes.md
 backup
 pullRemote.sh
 pushRemote.sh
+node_modules

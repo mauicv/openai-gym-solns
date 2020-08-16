@@ -5,17 +5,17 @@ from algorithms.TD3.gt_stander.memory import Memory
 
 import tensorflow as tf
 import pygtgym as gym
-# import numpy as np
+import numpy as np
 
 
 class Trainer:
     def __init__(self, tau=0.05, burn_in_eps=30, critics=None, actor=None):
-        self.env = gym.make('LunarLanderContinuous-v2')
+        self.env = gym.make('gt-stander')
         self.memory = Memory(batch_size=120)
         self.tau = tau
         self.burn_in_eps = burn_in_eps
         self.eps = 0
-        self.actions_dim = self.env.action_space.shape[0]
+        self.actions_dim = 6
         self.discount_factor = 0.99
         self.episode_length = 0
         self.actor_learning_rate = 0.00001
@@ -25,40 +25,32 @@ class Trainer:
         self.clipping_val = 0.5
         self.low_action = -1
         self.high_action = 1
+        self.N = 100
 
         self.actor = ContinuousActor(model=actor) if actor else \
-            ContinuousActor.init_model(2, self.env.observation_space.shape[0],
-                                       400, self.env.action_space.shape[0])
+            ContinuousActor.init_model(2, 7, 400, 6)
 
         self.critic_1 = Critic(model=critics[0]) if all(critics) else \
-            Critic.init_model(2, self.env.observation_space.shape[0]
-                              + self.env.action_space.shape[0], 400)
+            Critic.init_model(2, 7 + 6, 400)
 
         self.critic_2 = Critic(model=critics[1]) if all(critics) else \
-            Critic.init_model(2, self.env.observation_space.shape[0]
-                              + self.env.action_space.shape[0], 400)
+            Critic.init_model(2, 7 + 6, 400)
 
         if actor:
             self.target_actor = ContinuousActor(model=actor)
         else:
-            self.target_actor = ContinuousActor.init_model(
-                2, self.env.observation_space.shape[0],
-                400, self.env.action_space.shape[0])
+            self.target_actor = ContinuousActor.init_model(2, 7, 400, 6)
             self.target_actor.model.set_weights(self.actor.model.get_weights())
 
         if all(critics):
             self.target_critic_1 = Critic(model=critics[0])
             self.target_critic_2 = Critic(model=critics[1])
         else:
-            self.target_critic_1 = Critic.init_model(
-                2, self.env.observation_space.shape[0]
-                + self.env.action_space.shape[0], 400)
+            self.target_critic_1 = Critic.init_model(2, 7 + 6, 400)
             self.target_critic_1.model\
                 .set_weights(self.critic_1.model.get_weights())
 
-            self.target_critic_2 = Critic.init_model(
-                2, self.env.observation_space.shape[0]
-                + self.env.action_space.shape[0], 400)
+            self.target_critic_2 = Critic.init_model(2, 7 + 6, 400)
             self.target_critic_2.model\
                 .set_weights(self.critic_2.model.get_weights())
 
@@ -78,20 +70,21 @@ class Trainer:
         state = self.env.reset()
         reward_sum = 0
 
-        while not done:
+        while not done and self.episode_length < self.N:
             self.episode_length += 1
-            action = self.actor.get_action(state)
+            action = self.actor.get_action(np.array(state))
             action = action + tf.random\
-                .normal([2], mean=0.0,
+                .normal([6], mean=0.0,
                         stddev=self.exploration_value,
                         dtype=tf.dtypes.float64)
             action = tf.clip_by_value(action,
                                       clip_value_min=self.low_action,
                                       clip_value_max=self.high_action)
-            next_state, reward, done, _ = self.env.step(action)
-            self.memory.remember(state, action, reward, done, next_state)
+            next_state, reward, done, _ = self.env.step(list(action.numpy()))
+            self.memory.remember(state, action, -reward, done, next_state)
 
             reward_sum = reward_sum + reward
+            print(self.episode_length, reward, done)
             self.train()
             state = next_state
         self.env.close()
@@ -101,7 +94,6 @@ class Trainer:
     def train(self):
         if self.memory.full():
             states, actions, rewards, done, next_states = self.memory.sample()
-
             with tf.GradientTape() as actor_tape, \
                     tf.GradientTape() as critic_tape_1, \
                     tf.GradientTape() as critic_tape_2:

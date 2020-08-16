@@ -32,27 +32,27 @@ class Runner:
 
     @property
     def actor_loc(self):
-        return os.path.join(self.dirname, 'lunar_lander_td3', 'actor')
+        return os.path.join(self.dirname, 'gt_stander_td3', 'actor')
 
     @property
     def critic_1_loc(self):
-        return os.path.join(self.dirname, 'lunar_lander_td3', 'critic_1')
+        return os.path.join(self.dirname, 'gt_stander_td3', 'critic_1')
 
     @property
     def critic_2_loc(self):
-        return os.path.join(self.dirname, 'lunar_lander_td3', 'critic_2')
+        return os.path.join(self.dirname, 'gt_stander_td3', 'critic_2')
 
     @property
     def best_actor_loc(self):
-        return os.path.join(self.dirname, 'lunar_lander_td3', 'best_actor')
+        return os.path.join(self.dirname, 'gt_stander_td3', 'best_actor')
 
     @property
     def best_critic_1_loc(self):
-        return os.path.join(self.dirname, 'lunar_lander_td3', 'best_critic_1')
+        return os.path.join(self.dirname, 'gt_stander_td3', 'best_critic_1')
 
     @property
     def best_critic_2_loc(self):
-        return os.path.join(self.dirname, 'lunar_lander_td3', 'best_critic_2')
+        return os.path.join(self.dirname, 'gt_stander_td3', 'best_critic_2')
 
     def start(self):
         for i in range(self.num_episodes):
@@ -84,7 +84,7 @@ class Runner:
 
     def test_run(self):
         done = False
-        env = gym.make('LunarLanderContinuous-v2')
+        env = gym.make('gt-stander')
         state = env.reset()
         episode_length = 0
         episode_r = 0
@@ -93,9 +93,11 @@ class Runner:
 
         while not done:
             episode_length += 1
+            state = np.array(state)
             action = self.trainer.actor.model(state[np.newaxis, :])
-            next_state, reward, done, _ = env.step(action[0])
-            next_state = next_state[np.newaxis, :]
+            list_action = list(action[0].numpy())
+            next_state, reward, done, _ = env.step(list_action)
+            next_state = np.array(next_state)[np.newaxis, :]
             next_action = self.trainer.actor.model(next_state)
 
             Q_input = tf.concat([next_state, next_action], axis=1)

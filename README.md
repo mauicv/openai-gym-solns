@@ -32,4 +32,4 @@ python main.py example --target='luner-lander' --algorithm='pg'
 
 
 #### TODO:
-- [ ] Add policy delay to TD3
+- [ ] pygtgym env.reset is broken
