@@ -9,7 +9,7 @@ import gym
 
 
 class Trainer:
-    def __init__(self, tau=0.005, burn_in_eps=30, critics=None, actor=None):
+    def __init__(self, tau=0.005, burn_in_eps=0, critics=None, actor=None):
         self.env = gym.make('LunarLanderContinuous-v2')
         self.memory = Memory(batch_size=120)
         self.tau = tau
