@@ -9,7 +9,7 @@ import gym
 
 
 class Trainer:
-    def __init__(self, tau=0.05, burn_in_eps=30, critics=None, actor=None):
+    def __init__(self, tau=0.005, burn_in_eps=30, critics=None, actor=None):
         self.env = gym.make('LunarLanderContinuous-v2')
         self.memory = Memory(batch_size=120)
         self.tau = tau
@@ -118,12 +118,6 @@ class Trainer:
                 if self.update_policy:
                     action_loss = tf.math.negative(self.action_loss(states))
 
-            if self.update_policy:
-                actor_grads = actor_tape\
-                    .gradient(action_loss, self.actor_variables)
-                self.actor_opt \
-                    .apply_gradients(zip(actor_grads, self.actor_variables))
-
             critic_1_grads = critic_tape_1\
                 .gradient(Q_loss_1, self.critic_1_variables)
             critic_2_grads = critic_tape_2\
@@ -136,9 +130,17 @@ class Trainer:
                 .apply_gradients(zip(critic_2_grads,
                                  self.critic_2_variables))
 
-            self.target_actor.track_weights(self.tau, self.actor.model)
-            self.target_critic_1.track_weights(self.tau, self.critic_1.model)
-            self.target_critic_2.track_weights(self.tau, self.critic_2.model)
+            if self.update_policy:
+                actor_grads = actor_tape\
+                    .gradient(action_loss, self.actor_variables)
+                self.actor_opt \
+                    .apply_gradients(zip(actor_grads, self.actor_variables))
+
+                self.target_actor.track_weights(self.tau, self.actor.model)
+                self.target_critic_1 \
+                    .track_weights(self.tau, self.critic_1.model)
+                self.target_critic_2 \
+                    .track_weights(self.tau, self.critic_2.model)
 
             if self.update_policy:
                 return Q_loss_1.numpy(), Q_loss_2.numpy(), action_loss
