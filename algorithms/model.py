@@ -51,12 +51,12 @@ class ContinuousActor:
         return self.model(inputs[np.newaxis, :])[0]
 
     def track_weights(self, tau, model):
-        main_weights = self.model.get_weights()
-        target_weights = model.get_weights()
-        target_weights = [tau * main_weight + (1 - tau) *
-                          target_weight for main_weight, target_weight in
-                          zip(main_weights, target_weights)]
-        self.model.set_weights(target_weights)
+        self_weights = self.model.get_weights()
+        other_weights = model.get_weights()
+        other_weights = [(1 - tau) * self_weight + tau *
+                         other_weight for self_weight, other_weight in
+                         zip(self_weights, other_weights)]
+        self.model.set_weights(other_weights)
 
 
 class Critic:
@@ -79,9 +79,9 @@ class Critic:
         return self.model(inputs[np.newaxis, :])
 
     def track_weights(self, tau, model):
-        main_weights = self.model.get_weights()
-        target_weights = model.get_weights()
-        target_weights = [tau * main_weight + (1 - tau) *
-                          target_weight for main_weight, target_weight in
-                          zip(main_weights, target_weights)]
-        self.model.set_weights(target_weights)
+        self_weights = self.model.get_weights()
+        other_weights = model.get_weights()
+        other_weights = [(1 - tau) * self_weight + tau *
+                         other_weight for self_weight, other_weight in
+                         zip(self_weights, other_weights)]
+        self.model.set_weights(other_weights)
