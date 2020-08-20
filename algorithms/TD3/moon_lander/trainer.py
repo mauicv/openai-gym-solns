@@ -9,7 +9,12 @@ import gym
 
 
 class Trainer:
-    def __init__(self, tau=0.005, burn_in_eps=0, critics=None, actor=None):
+    def __init__(
+            self,
+            tau=0.005,
+            burn_in_eps=0,
+            critics=[None, None],
+            actor=None):
         self.env = gym.make('LunarLanderContinuous-v2')
         self.memory = Memory(batch_size=120)
         self.tau = tau
@@ -18,50 +23,55 @@ class Trainer:
         self.actions_dim = self.env.action_space.shape[0]
         self.discount_factor = 0.99
         self.episode_length = 0
-        self.actor_learning_rate = 0.0001
-        self.critic_learning_rate = 0.001
-        self.exploration_value = 0.2
+        self.actor_learning_rate = 0.00001
+        self.critic_learning_rate = 0.00001
+        self.exploration_value = 0.1
         self.smoothing_var = 0.05
-        self.clipping_val = 0.5
+        self.clipping_val = 0.4
         self.low_action = -1
         self.high_action = 1
-        self.policy_freq = 2
+        self.policy_freq = 10
+        self.actor_hidden_layers = 3
+        self.critic_hidden_layers = 3
+        self.layer_units = 300
 
         self.actor = ContinuousActor(model=actor) if actor else \
-            ContinuousActor.init_model(2, self.env.observation_space.shape[0],
-                                       400, self.env.action_space.shape[0])
+            ContinuousActor.init_model(self.actor_hidden_layers,
+                                       self.env.observation_space.shape[0],
+                                       self.layer_units,
+                                       self.env.action_space.shape[0])
 
         self.critic_1 = Critic(model=critics[0]) if all(critics) else \
-            Critic.init_model(2, self.env.observation_space.shape[0]
-                              + self.env.action_space.shape[0], 400)
+            Critic.init_model(self.critic_hidden_layers,
+                              self.env.observation_space.shape[0]
+                              + self.env.action_space.shape[0],
+                              self.layer_units)
 
         self.critic_2 = Critic(model=critics[1]) if all(critics) else \
-            Critic.init_model(2, self.env.observation_space.shape[0]
-                              + self.env.action_space.shape[0], 400)
+            Critic.init_model(self.critic_hidden_layers,
+                              self.env.observation_space.shape[0]
+                              + self.env.action_space.shape[0],
+                              self.layer_units)
 
-        if actor:
-            self.target_actor = ContinuousActor(model=actor)
-        else:
-            self.target_actor = ContinuousActor.init_model(
-                2, self.env.observation_space.shape[0],
-                400, self.env.action_space.shape[0])
-            self.target_actor.model.set_weights(self.actor.model.get_weights())
+        self.target_actor = ContinuousActor \
+            .init_model(self.actor_hidden_layers,
+                        self.env.observation_space.shape[0],
+                        self.layer_units, self.env.action_space.shape[0])
+        self.target_actor.model.set_weights(self.actor.model.get_weights())
 
-        if all(critics):
-            self.target_critic_1 = Critic(model=critics[0])
-            self.target_critic_2 = Critic(model=critics[1])
-        else:
-            self.target_critic_1 = Critic.init_model(
-                2, self.env.observation_space.shape[0]
-                + self.env.action_space.shape[0], 400)
-            self.target_critic_1.model\
-                .set_weights(self.critic_1.model.get_weights())
+        self.target_critic_1 = Critic \
+            .init_model(self.critic_hidden_layers,
+                        self.env.observation_space.shape[0]
+                        + self.env.action_space.shape[0], self.layer_units)
+        self.target_critic_1.model\
+            .set_weights(self.critic_1.model.get_weights())
 
-            self.target_critic_2 = Critic.init_model(
-                2, self.env.observation_space.shape[0]
-                + self.env.action_space.shape[0], 400)
-            self.target_critic_2.model\
-                .set_weights(self.critic_2.model.get_weights())
+        self.target_critic_2 = Critic \
+            .init_model(self.critic_hidden_layers,
+                        self.env.observation_space.shape[0]
+                        + self.env.action_space.shape[0], self.layer_units)
+        self.target_critic_2.model\
+            .set_weights(self.critic_2.model.get_weights())
 
         self.actor_variables = self.actor.model.trainable_variables
         self.critic_1_variables = self.critic_1.model.trainable_variables
