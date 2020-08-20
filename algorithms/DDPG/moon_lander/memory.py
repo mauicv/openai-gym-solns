@@ -4,7 +4,7 @@ import random
 
 
 class Memory:
-    def __init__(self, batch_size, max_size=2500):
+    def __init__(self, batch_size, max_size=1000000):
         self.deque = deque()
         self.batch_size = batch_size
         self.max_size = max_size
