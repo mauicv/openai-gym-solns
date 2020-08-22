@@ -59,14 +59,14 @@ class Runner:
             reward_sum, episode_length = \
                 self.trainer.run_episode()
 
-            if i % 20 == 0:
+            if i % 10 == 0:
                 self.trainer.actor.model.save(self.actor_loc)
                 self.trainer.critic_1.model.save(self.critic_1_loc)
                 self.trainer.critic_2.model.save(self.critic_2_loc)
 
             self.print(i, reward_sum, episode_length)
 
-            if i % 5 == 0:
+            if i % 3 == 0:
                 score = self.test_run()
                 self.scores.append(score)
                 score = np.array(self.scores[-25:]).mean()

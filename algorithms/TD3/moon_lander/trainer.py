@@ -16,24 +16,24 @@ class Trainer:
             critics=[None, None],
             actor=None):
         self.env = gym.make('LunarLanderContinuous-v2')
-        self.memory = Memory(batch_size=120)
+        self.memory = Memory(batch_size=64)
         self.tau = tau
         self.burn_in_eps = burn_in_eps
         self.eps = 0
         self.actions_dim = self.env.action_space.shape[0]
         self.discount_factor = 0.99
         self.episode_length = 0
-        self.actor_learning_rate = 0.00001
-        self.critic_learning_rate = 0.00001
-        self.exploration_value = 0.1
+        self.actor_learning_rate = 0.0001
+        self.critic_learning_rate = 0.0001
+        self.exploration_value = 0.2
         self.smoothing_var = 0.05
         self.clipping_val = 0.4
         self.low_action = -1
         self.high_action = 1
-        self.policy_freq = 10
-        self.actor_hidden_layers = 3
-        self.critic_hidden_layers = 3
-        self.layer_units = 300
+        self.policy_freq = 4
+        self.actor_hidden_layers = 2
+        self.critic_hidden_layers = 2
+        self.layer_units = 200
 
         self.actor = ContinuousActor(model=actor) if actor else \
             ContinuousActor.init_model(self.actor_hidden_layers,
