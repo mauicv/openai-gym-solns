@@ -82,7 +82,7 @@ class Runner:
         print('    length', episode_length)
         print('    reward_sum:', reward_sum)
 
-    def test_run(self):
+    def test_run(self, max_ep_steps=300):
         done = False
         env = gym.make('LunarLanderContinuous-v2')
         state = env.reset()
@@ -91,7 +91,7 @@ class Runner:
         acc_Q_loss_1 = 0
         acc_Q_loss_2 = 0
 
-        while not done:
+        while not done and episode_length < max_ep_steps:
             episode_length += 1
             action = self.trainer.actor.model(state[np.newaxis, :])
             next_state, reward, done, _ = env.step(action[0])
