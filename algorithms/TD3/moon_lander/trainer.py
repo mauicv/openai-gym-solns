@@ -23,7 +23,7 @@ class Trainer:
         self.actions_dim = self.env.action_space.shape[0]
         self.discount_factor = 0.9
         self.episode_length = 0
-        self.actor_learning_rate = 0.0001
+        self.actor_learning_rate = 0.00001
         self.critic_learning_rate = 0.0001
         self.exploration_value = 0.2
         self.smoothing_var = 0.05
