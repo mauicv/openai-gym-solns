@@ -21,7 +21,7 @@ class Trainer:
         self.burn_in_eps = burn_in_eps
         self.eps = 0
         self.actions_dim = self.env.action_space.shape[0]
-        self.discount_factor = 0.99
+        self.discount_factor = 0.9
         self.episode_length = 0
         self.actor_learning_rate = 0.0001
         self.critic_learning_rate = 0.0001
@@ -34,6 +34,7 @@ class Trainer:
         self.actor_hidden_layers = 2
         self.critic_hidden_layers = 2
         self.layer_units = 200
+        self.max_ep_steps = 300
 
         self.actor = ContinuousActor(model=actor) if actor else \
             ContinuousActor.init_model(self.actor_hidden_layers,
@@ -89,7 +90,7 @@ class Trainer:
         state = self.env.reset()
         reward_sum = 0
 
-        while not done:
+        while not done and self.episode_length < self.max_ep_steps:
             self.episode_length += 1
             action = self.actor.get_action(state)
             action = action + tf.random\
