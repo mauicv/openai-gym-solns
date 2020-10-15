@@ -41,7 +41,6 @@ def example(eps, steps):
     trainer = Runner(0, 0,
                      out='./algorithms/policy_gradient/moon_lander/soln') \
         .trainer
-    trainer = Runner(0, 0).trainer
     actor = trainer.actor
     state = env.reset()
     done = False

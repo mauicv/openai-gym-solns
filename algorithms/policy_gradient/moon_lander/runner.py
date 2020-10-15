@@ -20,7 +20,7 @@ class Runner:
 
     @property
     def model_loc(self):
-        return os.path.join(self.dirname, 'lunder_lander')
+        return os.path.join(self.dirname, 'moon_lander')
 
     def start(self):
         for i in range(self.num_episodes):
