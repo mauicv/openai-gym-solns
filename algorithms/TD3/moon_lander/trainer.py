@@ -121,9 +121,13 @@ class Trainer:
                                         next_states, done)
 
                 Q_input = tf.concat([states, actions], axis=1)
-                squared_error_1 = tf.pow(y - self.critic_1.model(Q_input), 2)
-                squared_error_2 = tf.pow(y - self.critic_2.model(Q_input), 2)
+
+                td_err_1 = tf.stop_gradients(y) - self.critic_1.model(Q_input)
+                squared_error_1 = tf.pow(td_err_1, 2)
                 Q_loss_1 = tf.reduce_mean(squared_error_1)
+
+                td_err_2 = tf.stop_gradients(y) - self.critic_2.model(Q_input)
+                squared_error_2 = tf.pow(td_err_2, 2)
                 Q_loss_2 = tf.reduce_mean(squared_error_2)
 
                 if self.update_policy:

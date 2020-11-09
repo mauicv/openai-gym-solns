@@ -132,7 +132,8 @@ class Trainer:
         y = rewards[:, None] + self.discount_factor*(1-done)*self\
             .target_critic.model(Q_input)
         Q_input = tf.concat([states, actions], axis=1)
-        squared_error = tf.pow(y - self.critic.model(Q_input), 2)
+        td_error = tf.stop_gradients(y) - self.critic.model(Q_input)
+        squared_error = tf.pow(td_error, 2)
         return tf.reduce_mean(squared_error)
 
     def action_loss(self, states):
