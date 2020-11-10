@@ -21,7 +21,7 @@ class Trainer:
         self.burn_in_eps = burn_in_eps
         self.eps = 0
         self.actions_dim = self.env.action_space.shape[0]
-        self.discount_factor = 0.9
+        self.discount_factor = 0.999
         self.episode_length = 0
         self.actor_learning_rate = 0.00001
         self.critic_learning_rate = 0.0001
